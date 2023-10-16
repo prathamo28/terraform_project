@@ -16,7 +16,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "alt_database_back
   bucket = aws_s3_bucket.alt_s3_database_backup_test.id
   rule {
     apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.alt_backup_test.id
+      kms_master_key_id = aws_kms_key.alt_backup_test.arn
       sse_algorithm = "aws:kms"
     }
   }
@@ -29,7 +29,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "alt_database_back
   bucket = aws_s3_bucket.alt_s3_database_backup_prod.id
   rule {
     apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.alt_backup_prod.id
+      kms_master_key_id = aws_kms_key.alt_backup_prod.arn
       sse_algorithm = "aws:kms"
     }
   }
@@ -42,7 +42,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "alt_app_backup_te
   bucket = aws_s3_bucket.alt_s3_database_backup_test.id
   rule {
     apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.alt_backup_test.id
+      kms_master_key_id = aws_kms_key.alt_backup_test.arn
       sse_algorithm = "aws:kms"
     }
   }
@@ -55,7 +55,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "alt_app_backup_pr
   bucket = aws_s3_bucket.alt_s3_database_backup_prod.id
   rule {
     apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.alt_backup_prod.id
+      kms_master_key_id = aws_kms_key.alt_backup_prod.arn
       sse_algorithm = "aws:kms"
     }
   }
