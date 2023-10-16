@@ -24,12 +24,21 @@ jobs:
 
       - name: Terraform init
         run: terraform init
-
-      - name: Import EC2 instances
-        run: |
-          terraform import aws_instance.example_instance[0] i-0fae66b6348bdb0a2
-          terraform import aws_instance.example_instance[1] i-0410e332568b4595d
           
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -out=tfplan
+        continue-on-error: true
 
-      - name: Terraform plan
-        run: terraform plan
+      - name: Check Terraform Plan Status
+        run: |
+          if [ ${{ steps.plan.outcome }} == "success" ]; then
+            echo "Terraform plan succeeded, proceeding to apply changes."
+          else
+            echo "Terraform plan failed. Check the logs for errors."
+            exit 1
+          fi
+
+      - name: Terraform Apply
+        if: success() && github.event_name == 'push'
+        run: terraform apply tfplan
