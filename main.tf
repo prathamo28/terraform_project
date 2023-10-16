@@ -1,10 +1,14 @@
-#Creating KMS Key
+
 data "aws_iam_policy_document" "alt_backup_key_policy" {
   statement {
     sid       = "Enable IAM User Permissions"
     effect    = "Allow"
     resources = ["*"]
-    actions   = ["kms:*"]
+
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+    ]
 
     principals {
       type        = "AWS"
@@ -12,17 +16,16 @@ data "aws_iam_policy_document" "alt_backup_key_policy" {
     }
   }
 }
-#kms key creation
+
 resource "aws_kms_key" "alt_backup_test" {
-  description = "Alt-Backup-key-for-s3-test-bucket" 
-  policy = data.aws_iam_policy_document.alt_backup_key_policy.json
+  description = "Alt-Backup-key-for-s3-test-bucket"
+  policy      = data.aws_iam_policy_document.alt_backup_key_policy.json
 }
 
 resource "aws_kms_key" "alt_backup_prod" {
-  description = "Alt-Backup-key-for-s3-Prod-buckets" 
-  policy = data.aws_iam_policy_document.alt_backup_key_policy.json
+  description = "Alt-Backup-key-for-s3-Prod-buckets"
+  policy      = data.aws_iam_policy_document.alt_backup_key_policy.json
 }
-
 
 
 #Creating S3 buckets
