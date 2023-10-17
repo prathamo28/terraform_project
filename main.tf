@@ -21,7 +21,7 @@ data "aws_iam_policy_document" "hello" {
 
 
 resource "aws_s3_bucket" "example_bucket" {
-  bucket = "example-bucket-name"
+  bucket = "epam-altrata-testing-bucket"
 }
 
 resource "aws_s3_bucket_policy" "allow_access_from_another_account" {
