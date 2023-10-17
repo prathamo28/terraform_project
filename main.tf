@@ -1,64 +1,34 @@
-#Creating KMS key 
-resource "aws_kms_key" "alt_backup_test" {
-  description = "Alt-Backup-key-for-s3-test-bucket"
+data "aws_organizations_organization" "current" {}
+
+data "aws_organizations_organizational_units" "altrata_ou" {
+  parent_id = data.aws_organizations_organization.current.roots[0].id
 }
 
-resource "aws_kms_key" "alt_backup_prod" {
-  description = "Alt-Backup-key-for-s3-Prod-buckets"
-}
+data "aws_iam_policy_document" "hello" {
+  statement {
+    sid       = "AllowPutFromOrganizationAndAltrataOU"
+    effect    = "Allow"
+    resources = ["arn:aws:s3:::example-bucket-name/*"]
+    actions   = ["s3:PutObject"]
 
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalOrgID"
+      values   = ["o-15zuuzur24"]
+    }
 
-#Creating S3 buckets
-resource "aws_s3_bucket" "alt_s3_database_backup_test" {
-  bucket = "alt-s3-database-backup-test-v1"
-}
-resource "aws_s3_bucket_server_side_encryption_configuration" "alt_database_backup_test_encryption" {
-  bucket = aws_s3_bucket.alt_s3_database_backup_test.id
-  rule {
-    apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.alt_backup_test.arn
-      sse_algorithm = "aws:kms"
+    principals {
+      type        = "*"
+      identifiers = ["*"]
     }
   }
 }
 
-resource "aws_s3_bucket" "alt_s3_database_backup_prod" {
-  bucket = "alt-s3-database-backup-prod-v1"
-}
-resource "aws_s3_bucket_server_side_encryption_configuration" "alt_database_backup_prod_encryption" {
-  bucket = aws_s3_bucket.alt_s3_database_backup_prod.id
-  rule {
-    apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.alt_backup_prod.arn
-      sse_algorithm = "aws:kms"
-    }
-  }
-}
 
-resource "aws_s3_bucket" "alt_s3_app_backup_test" {
-  bucket = "alt-s3-app-backup-test-v1"
-}
-resource "aws_s3_bucket_server_side_encryption_configuration" "alt_app_backup_test_encryption" {
-  bucket = aws_s3_bucket.alt_s3_database_backup_test.id
-  rule {
-    apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.alt_backup_test.arn
-      sse_algorithm = "aws:kms"
-    }
-  }
-}
+resource "aws_s3_bucket" "example_bucket" {
+  bucket = "example-bucket-name"
+  policy = data.aws_iam_policy_document.hello.json
 
-resource "aws_s3_bucket" "alt_s3_app_backup_prod" {
-  bucket = "alt-s3-app-backup-prod-v1"
-}
-resource "aws_s3_bucket_server_side_encryption_configuration" "alt_app_backup_prod_encryption" {
-  bucket = aws_s3_bucket.alt_s3_database_backup_prod.id
-  rule {
-    apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.alt_backup_prod.arn
-      sse_algorithm = "aws:kms"
-    }
-  }
 }
 
 
