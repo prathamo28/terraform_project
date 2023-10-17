@@ -1,8 +1,3 @@
-data "aws_organizations_organization" "current" {}
-
-data "aws_organizations_organizational_units" "altrata_ou" {
-  parent_id = data.aws_organizations_organization.current.roots[0].id
-}
 
 data "aws_iam_policy_document" "hello" {
   statement {
@@ -31,5 +26,9 @@ resource "aws_s3_bucket" "example_bucket" {
 
 }
 
-#
+resource "aws_s3_bucket_policy" "allow_access_from_another_account" {
+  bucket = aws_s3_bucket.example_bucket.id
+  policy = data.aws_iam_policy_document.allow_access_from_another_account.json
+}
+
 
