@@ -1,32 +1,16 @@
-
-data "aws_iam_policy_document" "hello" {
-  statement {
-    sid       = "AllowPutFromOrganizationAndAltrataOU"
-    effect    = "Allow"
-    resources = ["arn:aws:s3:::example-bucket-name/*"]
-    actions   = ["s3:PutObject"]
-
-    condition {
-      test     = "StringEquals"
-      variable = "aws:PrincipalOrgID"
-      values   = ["o-15zuuzur24"]
-    }
-
-    principals {
-      type        = "*"
-      identifiers = ["*"]
-    }
-  }
+#Creating KMS key 
+resource "aws_kms_key" "alt_backup_day_key" {
+  description = "Alt-Backup-key-day-vault"
 }
 
-
-resource "aws_s3_bucket" "example_bucket" {
-  bucket = "epam-altrata-testing-bucket"
+resource "aws_backup_vault" "alt_backup_day_vault" {
+  name        = "alt-vault-twenty-day-retention-v1"
+  kms_key_arn = aws_kms_key.alt_backup_day_key.arn
 }
 
-resource "aws_s3_bucket_policy" "allow_access_from_another_account" {
-  bucket = aws_s3_bucket.example_bucket.id
-  policy = data.aws_iam_policy_document.hello.json
+resource "aws_backup_vault_lock_configuration" "alt_backup_day_lock" {
+  backup_vault_name   = "alt-vault-twenty-day-retention-v1"
+  max_retention_days  = 7
+  min_retention_days  = 7
 }
-
 
