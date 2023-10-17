@@ -61,9 +61,9 @@ resource "aws_backup_plan" "alt_backup_day_plan" {
     rule_name = "alt-vault-twenty-day-plan"
     target_vault_name = aws_backup_vault.alt_backup_day_vault.name
     schedule = "cron(30 5 * * ? *)"
-  }
-  lifecycle {
-    delete_after = 2
+    lifecycle {
+      delete_after = 2
+    }
   }
   advanced_backup_setting {
     backup_options = {
