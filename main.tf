@@ -107,7 +107,9 @@ resource "aws_iam_role" "alt_assume_role" {
   assume_role_policy = "${data.aws_iam_policy_document.alt_test_role.json}"
 }
 
-resource "aws_iam_role_policy_attachment" "alt_ops_backup_role_attachment" {
-  policy_arn = aws_iam_policy.alt_new_policy.arn
-  role       = [aws_iam_role.alt_assume_role.name]
+resource "aws_iam_policy_attachment" "alt_ops_backup_role_attachment" {
+  name        = "policy attachment"
+  roles       = [aws_iam_role.alt_assume_role.name]
+  policy_arn  = aws_iam_policy.alt_new_policy.arn
+  
 }
