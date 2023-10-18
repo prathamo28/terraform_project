@@ -89,6 +89,7 @@ resource "aws_iam_policy" "alt_new_policy" {
   policy = "${data.aws_iam_policy_document.altrata_test_policy.json}"
 }
 
+#creating role
 data "aws_iam_policy_document" "alt_test_role" {
   statement {
     sid     = ""
