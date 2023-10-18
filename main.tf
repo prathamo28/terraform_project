@@ -86,7 +86,7 @@ data "aws_iam_policy_document" "altrata_test_policy" {
 
 resource "aws_iam_policy" "alt_new_policy" {
   name = "alt-get-policy"
-  policy = "${data.aws_iam_policy_document.alt_kms_policy.json}"
+  policy = "${data.aws_iam_policy_document.altrata_test_policy.json}"
 }
 
 data "aws_iam_policy_document" "alt_test_role" {
