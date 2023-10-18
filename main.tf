@@ -86,7 +86,7 @@ data "aws_iam_policy_document" "altrata_test_policy" {
 
 resource "aws_iam_policy" "alt_new_policy" {
   name = "alt-get-policy"
-  policy = data.aws_iam_policy_document.alt_kms_policy.json
+  policy = "${data.aws_iam_policy_document.alt_kms_policy.json}"
 }
 
 data "aws_iam_policy_document" "alt_test_role" {
@@ -104,10 +104,10 @@ data "aws_iam_policy_document" "alt_test_role" {
 
 resource "aws_iam_role" "alt_assume_role" {
   name = "alt-assume-role"
-  assume_role_policy = data.aws_iam_policy_document.alt_test_role.json
+  assume_role_policy = "${data.aws_iam_policy_document.alt_test_role.json}"
 }
 
 resource "aws_iam_role_policy_attachment" "alt_ops_backup_role_attachment" {
   policy_arn = aws_iam_policy.alt_new_policy.arn
-  role       = aws_iam_role.alt_assume_role.name
+  role       = [aws_iam_role.alt_assume_role.name]
 }
