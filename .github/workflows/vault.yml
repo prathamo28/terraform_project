@@ -12,22 +12,9 @@ on:
           - ap-southeast-1
           - us-east-1
       environments:
-        type: choice
-        description: Choose environments
-        options:
-          - alt-we-dev
-          - alt-we-pre-prod
-          - alt-dev
-          - alt-we-qa
-          - alt-collection-test
-          - alt-data-services-test
-          - alt-delivery-test
-          - alt-platform-test
-          - alt-we-prod
-          - alt-collection-prod
-          - alt-data-services-prod
-          - alt-delivery-prod
-          - alt-platform-prod
+        description: 'Choose environments (comma-separated)'
+        required: true
+
 
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
