@@ -1,19 +1,10 @@
 name: Vault
 
 on:
-  workflow_dispatch:
-    inputs:
-      region:
-        type: choice
-        description: Choose region
-        options:
-          - us-east-2
-          - eu-west-1
-          - ap-southeast-1
-          - us-east-1
-      environments:
-        description: 'Choose environments (comma-separated)'
-        required: true
+  push:
+    branches:
+      - backup-vault
+ 
 
 
 env:
