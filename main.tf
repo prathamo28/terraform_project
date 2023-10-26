@@ -1,3 +1,27 @@
+data "aws_iam_policy_document" "assume_role" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["backup.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
+resource "aws_iam_role" "alt_vault_role" {
+  name               = "example"
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+}
+
+resource "aws_iam_role_policy_attachment" "example" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup"
+  role       = aws_iam_role.example.name
+}
+
+
+
 # KMS Key for Vault
 resource "aws_kms_key" "backup_key" {
   description = "Backup key for vault"
@@ -22,6 +46,14 @@ resource "aws_backup_plan" "thirty_day_retention_plan" {
     }
   }
 }
+
+resource "aws_backup_selection" "ec2_selection" {
+  iam_role_arn = aws_iam_role.alt_vault_role.arn
+  name = "backup-selection"
+  plan_id = aws_backup_plan.thirty_day_retention_plan.id
+  resources = ["arn:aws:ec2:*:*:instance/*"]
+  }
+
 
 
 
