@@ -1,6 +1,6 @@
 # KMS Key for Vault
 resource "aws_kms_key" "backup_key" {
-  description = "Backup key for ${aws_organization.id}"
+  description = "Backup key for vault"
   key_usage = "ENCRYPT_DECRYPT"
 }
 
