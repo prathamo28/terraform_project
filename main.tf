@@ -28,7 +28,7 @@ resource "aws_kms_key" "backup_key" {
   key_usage = "ENCRYPT_DECRYPT"
 }
 
-# Vault for thirty-day retention
+# Vault for thirty-day retention new
 resource "aws_backup_vault" "thirty_day_retention_vault" {
   name                 = "alt-vault-thirty-day-retention-v1"
   kms_key_arn          = aws_kms_key.backup_key.arn
