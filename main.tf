@@ -11,7 +11,7 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 resource "aws_iam_role" "alt_vault_role" {
-  name               = "example"
+  name               = "vault-role"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
