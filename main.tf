@@ -15,7 +15,7 @@ resource "aws_backup_plan" "thirty_day_retention_plan" {
   rule {
     rule_name = "example_backup_rule"
     target_vault_name = aws_backup_vault.thirty_day_retention_vault.name
-    schedule = "cron(0 5-6 * * *)"
+    schedule = "cron(0 5 * * *)"
     
     lifecycle {
       delete_after = 2
