@@ -17,7 +17,7 @@ resource "aws_iam_role" "alt_vault_role" {
 
 resource "aws_iam_role_policy_attachment" "example" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup"
-  role       = aws_iam_role.example.name
+  role       = aws_iam_role.alt_vault_role.name
 }
 
 
