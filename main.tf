@@ -1,7 +1,7 @@
 
 # KMS Key for Vault
 resource "aws_kms_key" "alt_vault_thirty_day_key" {
-  for_each    = toset(var.regions)
+  for_each    = var.regions
   description = "alt-vault-thirty-day-retention-key"
   key_usage   = "ENCRYPT_DECRYPT"
 }
@@ -12,7 +12,7 @@ resource "aws_kms_alias" "alt_vault_thirty_day" {
 }
 
 resource "aws_kms_key" "alt_vault_six_month_key" {
-  for_each    = toset(var.regions)
+  for_each    = var.regions
   description = "alt-vault-six-month-retention-key"
   key_usage   = "ENCRYPT_DECRYPT"
 }
