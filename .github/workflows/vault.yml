@@ -32,15 +32,3 @@ jobs:
         run: terraform plan -out=tfplan
         continue-on-error: true
 
-      - name: Check Terraform Plan Status
-        run: |
-          if [ ${{ steps.plan.outcome }} == "success" ]; then
-            echo "Terraform plan succeeded, proceeding to apply changes."
-          else
-            echo "Terraform plan failed. Check the logs for errors."
-            exit 1
-          fi
-
-      - name: Terraform Apply
-        if: success() && github.event_name == 'push'
-        run: terraform apply tfplan
