@@ -1,7 +1,8 @@
 data "aws_instance" "alt_ec2_role_data" {
- instance_tags = {
-    backup = "yes"
- }
+ filter {
+   name = "tag:backup"
+   values = ["yes"]
+ } 
 }
 
 data "aws_iam_instance_profile" "alt_ec2_role_name" {
