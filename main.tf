@@ -1,68 +1,146 @@
 
-# KMS Key for Vault
-resource "aws_kms_key" "alt_vault_thirty_day_key" {
-  for_each    = var.regions
-  description = "alt-vault-thirty-day-retention-key"
-  key_usage   = "ENCRYPT_DECRYPT"
-}
-resource "aws_kms_alias" "alt_vault_thirty_day" {
-  for_each    = var.regions
-  name          = "alias/alt-vault-day-${each.key}"
-  target_key_id = aws_kms_key.alt_vault_thirty_day_key[each.key].key_id
+data "aws_caller_identity" "current" {}
+
+data "aws_iam_role" "ec2_instance_role" {
+ name = "ec2-instance-role"
 }
 
-resource "aws_kms_key" "alt_vault_six_month_key" {
-  for_each    = var.regions
-  description = "alt-vault-six-month-retention-key"
-  key_usage   = "ENCRYPT_DECRYPT"
-}
-resource "aws_kms_alias" "alt_vault_six_month" {
-  for_each    = var.regions
-  name          = "alias/alt-vault-month-${each.key}"
-  target_key_id = aws_kms_key.alt_vault_six_month_key[each.key].key_id
-}
+resource "aws_kms_key" "bucket_key" {
+ description             = "KMS key for s3 buckets"
+ deletion_window_in_days = 10
 
-# Create aws backup vault in alt-secure account 
-resource "aws_backup_vault" "thirty_day_retention_vault" {
-  for_each    = var.regions
-  name        = "alt-vault-thirty-day-retention-v1-${each.value}"
-  kms_key_arn = aws_kms_key.alt_vault_thirty_day_key[each.key].arn
-}
-resource "aws_backup_vault_lock_configuration" "alt_backup_day_lock" {
-  for_each    = var.regions
-  backup_vault_name   = "alt-vault-twenty-day-retention-v1-${each.value}"
-  min_retention_days  = 7
-  max_retention_days  = 30
+ policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowEC2InstanceRoleEncrypt"
+        Effect = "Allow"
+        Principal = {
+          AWS = data.aws_iam_role.ec2_instance_role.arn
+        }
+        Action = "kms:Encrypt"
+        Resource = "*"
+      }
+    ]
+ })
 }
 
-resource "aws_backup_vault" "six_month_retention_vault" {
-  for_each    = var.regions
-  name        = "alt-vault-six-month-retention-v1-${each.value}"
-  kms_key_arn = aws_kms_key.alt_vault_six_month_key[each.key].arn
+resource "aws_s3_bucket" "test_database_backup" {
+ bucket = "alt-s3-database-backup-${data.aws_caller_identity.current.account_id}-test-v1"
+ acl    = "private"
+
+ server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        kms_master_key_id = aws_kms_key.bucket_key.arn
+        sse_algorithm     = "aws:kms"
+      }
+    }
+ }
+
+ policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "s3:PutObject",
+        ]
+        Effect   = "Allow"
+        Resource = "arn:aws:s3:::${aws_s3_bucket.test_database_backup.bucket}/*"
+        Principal = {
+          AWS = data.aws_iam_role.ec2_instance_role.arn
+        }
+      }
+    ]
+ })
 }
-resource "aws_backup_vault_lock_configuration" "alt_backup_month_lock" {
-  for_each    = var.regions
-  backup_vault_name   = "alt-vault-six-month-retention-v1-${each.value}"
-  min_retention_days  = 90
-  max_retention_days  = 180
+
+resource "aws_s3_bucket" "prod_database_backup" {
+ bucket = "alt-s3-database-backup-${data.aws_caller_identity.current.account_id}-prod-v1"
+ acl    = "private"
+
+ server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        kms_master_key_id = aws_kms_key.bucket_key.arn
+        sse_algorithm     = "aws:kms"
+      }
+    }
+ }
+
+ policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "s3:PutObject",
+        ]
+        Effect   = "Allow"
+        Resource = "arn:aws:s3:::${aws_s3_bucket.prod_database_backup.bucket}/*"
+        Principal = {
+          AWS = data.aws_iam_role.ec2_instance_role.arn
+        }
+      }
+    ]
+ })
 }
 
+resource "aws_s3_bucket" "test_app_backup" {
+ bucket = "alt-s3-app-backup-${data.aws_caller_identity.current.account_id}-test-v1"
+ acl    = "private"
 
+ server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        kms_master_key_id = aws_kms_key.bucket_key.arn
+        sse_algorithm     = "aws:kms"
+      }
+    }
+ }
 
+ policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "s3:PutObject",
+        ]
+        Effect   = "Allow"
+        Resource = "arn:aws:s3:::${aws_s3_bucket.test_app_backup.bucket}/*"
+        Principal = {
+          AWS = data.aws_iam_role.ec2_instance_role.arn
+        }
+      }
+    ]
+ })
+}
 
+resource "aws_s3_bucket" "prod_app_backup" {
+ bucket = "alt-s3-app-backup-${data.aws_caller_identity.current.account_id}-prod-v1"
+ acl    = "private"
 
+ server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        kms_master_key_id = aws_kms_key.bucket_key.arn
+        sse_algorithm     = "aws:kms"
+      }
+    }
+ }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "s3:PutObject",
+        ]
+        Effect   = "Allow"
+        Resource = "arn:aws:s3:::${aws_s3_bucket.prod_app_backup.bucket}/*"
+        Principal = {
+          AWS = data.aws_iam_role.ec2_instance_role.arn
+        }
+      }
+    ]
+ })
+}
