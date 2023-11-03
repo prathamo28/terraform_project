@@ -1,7 +1,6 @@
 data "aws_instance" "alt_ec2_role_data" {
- filter {
-    name   = "alt:platform"
-    values = ["boardex"]
+ instance_tags = {
+    backup = "yes"
  }
 }
 
