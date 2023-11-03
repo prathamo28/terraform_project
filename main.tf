@@ -14,7 +14,7 @@ data "aws_iam_role" "ec2_instance_role" {
 }
 
 output "role_name" {
-  value = data.aws_iam_role.ec2_instance_role.arn
+  value = [for instance in data.aws_instances.alt_ec2_role_data.ids : aws_instance.iam_instance_profile[instance].name]
 }
 
 resource "aws_kms_key" "bucket_key" {
