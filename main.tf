@@ -1,8 +1,20 @@
+data "aws_instance" "alt_ec2_role_data" {
+ filter {
+    name   = "alt:platform"
+    values = ["boardex"]
+ }
+}
 
-data "aws_caller_identity" "current" {}
+data "aws_iam_instance_profile" "alt_ec2_role_name" {
+  name = data.aws_instance.alt_ec2_role_data.iam_instance_profile
+}
 
 data "aws_iam_role" "ec2_instance_role" {
- name = "ec2-instance-role"
+ name = data.aws_iam_instance_profile.alt_ec2_role_name.role_arn
+}
+
+output "role_name" {
+  value = data.aws_iam_role.ec2_instance_role.arn
 }
 
 resource "aws_kms_key" "bucket_key" {
