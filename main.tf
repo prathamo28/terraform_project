@@ -9,7 +9,7 @@ data "aws_iam_instance_profile" "alt_ec2_role_name" {
 }
 
 data "aws_iam_role" "ec2_instance_role" {
- name   = data.aws_iam_instance_profile.alt_ec2_role_name.role
+ name   = data.aws_iam_instance_profile.alt_ec2_role_name.role_name
 }
 
 output "role_name" {
